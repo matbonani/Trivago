@@ -26,6 +26,13 @@ class UserModel(db.Model):
             return user
         return None
 
+    @classmethod
+    def find_by_username(cls, username):
+        user = cls.query.filter_by(username=username).first()  # SELECT * FROM hoteis WHERE hotel_id=hotel_id
+        if user:
+            return user
+        return None
+
     def save_user(self):
         db.session.add(self)
         db.session.commit()
