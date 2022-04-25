@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Resource, Api
 
 from resources.hotel import Hoteis, Hotel
+from resources.user import User
 
 
 app = Flask(__name__)
@@ -17,6 +18,7 @@ def create_banco():
 
 api.add_resource(Hoteis, '/hoteis')
 api.add_resource(Hotel, '/hoteis/<string:hotel_id>')
+api.add_resource(User, '/usuarios/<int:user_id>')
 
 if __name__ == '__main__':
     from db import db
