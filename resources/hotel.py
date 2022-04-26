@@ -113,4 +113,3 @@ class Hotel(Resource):
                 return {"message": "An internal error ocurred trying to save hotel"}, 500
             return {"message": "Hotel deleted."}
         return {"message": "Hotel not found"}, 404
-
