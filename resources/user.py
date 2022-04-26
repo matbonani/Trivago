@@ -32,10 +32,13 @@ class UserRegister(Resource):
             arguments = reqparse.RequestParser()
             arguments.add_argument("username", type=str, required=True, help="The field 'nome' cannot be left blank")
             arguments.add_argument("password", type=str, required=True, help="The field 'nome' cannot be left blank")
+            arguments.add_argument("activated", type=bool)
             dados = arguments.parse_args()
+
             if UserModel.find_by_username(dados["username"]):
                 return {"message": "The username '{}' alredy exists".format(dados["username"])}
             user = UserModel(**dados)
+            user.activated = False  # garantido o False para esse campo
             try:
                 user.save_user()
             except:
@@ -54,8 +57,10 @@ class UserLogin(Resource):
 
         user = UserModel.find_by_username(dados["username"])
         if user and safe_str_cmp(user.password, dados["password"]):
-            access_token = create_access_token(identity=user.user_id)
-            return {"accces_token": access_token}, 200
+            if user.activated:
+                access_token = create_access_token(identity=user.user_id)
+                return {"accces_token": access_token}, 200
+            return {"message": "User not confirmed"}, 400
         return {"message": "The username or password is incorrect"}, 401
 
 
@@ -66,3 +71,16 @@ class UserLogout(Resource):
         jwt_id = get_jwt()["jti"]  # pega o token e envia para o BLACKLIST
         BLACKLIST.add(jwt_id)
         return {"message": "Logged out successfully"}, 200
+
+
+class UserConfirm(Resource):
+
+    @classmethod
+    def get(cls, user_id):
+        user = UserModel.find_user(user_id)
+
+        if not user:
+            return {"message": "User id '{}' not found".format(user_id)}, 404
+        user.activated = True
+        user.save_user()
+        return {"message": "User id '{}' confirmed succesfuly".format(user_id)}, 200

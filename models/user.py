@@ -8,15 +8,18 @@ class UserModel(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255))
     password = db.Column(db.String(100))
+    activated = db.Column(db.Boolean, default=False)
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, activated):
         self.username = username
         self.password = password
+        self.activated = activated
 
     def json(self):
         return {
             "user_id": self.user_id,
-            "username": self.username
+            "username": self.username,
+            "activated": self.activated
         }
 
     @classmethod
